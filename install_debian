@@ -84,9 +84,9 @@ if [ ! -f "`which JLinkConfig`" ]; then
 fi
 
 echo "Getting the source code repositories..."
-#git clone -q https://github.com/plerup/xplriot1_examples.git
-#cd xplriot1_examples
-#./do -n $ENV_DIR/ncs -t $ENV_DIR/$ARM_VER save
+git clone --recursive -q https://github.com/plerup/xplriot1_examples.git
+cd xplriot1_examples
+./do -n $ENV_DIR/ncs -t $ENV_DIR/$ARM_VER save
 
 # Enable free use of usb ports
 sudo usermod -a -G dialout $USER

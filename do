@@ -269,7 +269,7 @@ def check_directories(args):
     if args.ubxlib_dir != None:
         settings['ubxlib_dir'] = args.ubxlib_dir
     elif not 'ubxlib_dir' in settings:
-        settings['ubxlib_dir'] = os.path.realpath("../ubxlib")
+        settings['ubxlib_dir'] = os.path.realpath("ubxlib")
     if not exists(os.path.expandvars(settings['ubxlib_dir'])):
         error_exit("Ubxlib directory not found")
 

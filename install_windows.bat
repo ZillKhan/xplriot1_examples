@@ -77,10 +77,9 @@ rmdir /S /Q %DriverName%
 
 cd ..
 echo Getting the source code repositories...
-rem git clone -q https://github.com/u-blox/ubxlib.git
-rem git clone -q https://github.com/plerup/xplriot1_examples.git
-rem cd xplriot1_examples
-rem do -n %ENV_DIR%\ncs -t %ENV_DIR%\%GCCName% save
+git clone --recursive -q https://github.com/plerup/xplriot1_examples.git
+cd xplriot1_examples
+do -n %ENV_DIR%\ncs -t %ENV_DIR%\%GCCName% save
 
 echo Ended at: %date% %time%
 echo.
