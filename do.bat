@@ -1,1 +1,1 @@
-@python3 do %*
+@python do %*

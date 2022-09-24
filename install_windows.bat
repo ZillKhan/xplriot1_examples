@@ -7,7 +7,9 @@ echo.
 
 setlocal
 set ERR_FILE=%TEMP%\_err.txt
-set ENV_DIR=%USERPROFILE%\xplriot1\env
+set ROOT_DIR=%USERPROFILE%\xplriot1
+set ENV_DIR=%ROOT_DIR%\env
+set GIT_ENV_DIR=%ENV_DIR:\=/%
 set NCS_VERS=v2.1.0
 
 echo Started at: %date% %time%
@@ -18,7 +20,7 @@ echo Installing packages...
    1>nul 2>%ERR_FILE% || (type %ERR_FILE% & exit /b 1)
 set PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin
 call :SilentCom "choco install -y --no-progress cmake --installargs 'ADD_CMAKE_TO_PATH=System'"
-call :SilentCom "choco install -y --no-progress ninja gperf python git dtc-msys2 wget unzip nrfjprog tartool"
+call :SilentCom "choco install -y --no-progress ninja gperf python3 git dtc-msys2 wget unzip nrfjprog tartool"
 call refreshenv >nul
 pip3 install -q west
 set TarFile=newtmgr.tar.gz
@@ -41,8 +43,8 @@ pip3 install -q -r bootloader/mcuboot/scripts/requirements.txt >nul 2>&1
 echo Installing ARM compiler...
 cd ..
 set GCCLoc=https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/10-2020q4
-set GCCName=gcc-arm-none-eabi-10-2020-q4-major-win32
-set GCCZip=%GCCName%.zip
+set GCCName=gcc-arm-none-eabi-10-2020-q4-major
+set GCCZip=%GCCName%-win32.zip
 wget -q %GCCLoc%/%GCCZip%
 call unzip -q -o %GCCZip%
 del %GCCZip%
@@ -53,7 +55,8 @@ curl -s -L "https://code.visualstudio.com/sha/download?build=stable&os=win32-x64
 %CodeInstaller% /VERYSILENT /NORESTART /MERGETASKS=!runcode
 call refreshenv >nul
 del %CodeInstaller%
-echo Installing extension...
+echo Installing extensions...
+call :SilentCom "code --install-extension ms-vscode.cpptools"
 call :SilentCom "code --install-extension marus25.cortex-debug"
 
 echo Installing JLink software...
@@ -77,9 +80,12 @@ rmdir /S /Q %DriverName%
 
 cd ..
 echo Getting the source code repositories...
-git clone --recursive -q https://github.com/plerup/xplriot1_examples.git
+call git clone --recursive -q https://github.com/plerup/xplriot1_examples.git
 cd xplriot1_examples
-do -n %ENV_DIR%\ncs -t %ENV_DIR%\%GCCName% save
+call python do -n %ENV_DIR%\ncs -t %ENV_DIR%\%GCCName% save
+rem Avoid owner protection problems as we have cloned as admin
+call :SilentCom "takeown /r /f %ROOT_DIR%\xplriot1_examples"
+call git config --global --add safe.directory %GIT_ENV_DIR%/ncs/zephyr
 
 echo Ended at: %date% %time%
 echo.

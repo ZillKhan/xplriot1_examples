@@ -64,7 +64,7 @@ def build(args):
         exe_file = get_exe_file(args, False)
         if not args.no_bootloader and os.path.getmtime(exe_file) > start:
             mcuboot_dir = settings['ncs_dir'] + "/bootloader/mcuboot"
-            sign_com = (f"python {mcuboot_dir}/scripts/imgtool.py sign"
+            sign_com = (f"{sys.executable} {mcuboot_dir}/scripts/imgtool.py sign"
                         f" --key {mcuboot_dir}/root-rsa-2048.pem"
                         " --header-size 0x200 --align 4 --version 0.0.0+0"
                         " --pad-header --slot-size 0xe0000"

@@ -1,0 +1,56 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug",
+      "cwd": "${input:get_build_dir}/${command:cpptools.activeConfigName}",
+      "executable": "zephyr/${input:get_exe_file}",
+      "request": "launch",
+      "type": "cortex-debug",
+      "device": "NRF5340_XXAA_APP",
+      "interface": "swd",
+      "servertype": "jlink",
+      "runToEntryPoint": "main",
+      "armToolchainPath": "${input:get_gcc_dir}/bin",
+      "postLaunchCommands": [
+        "add-symbol-file ./zephyr/zephyr.elf 0",
+      ],
+      "preLaunchTask": "PreDebug"
+    }
+  ],
+  "inputs": [
+    {
+      "id": "get_build_dir",
+      "type": "command",
+      "command": "shellCommand.execute",
+      "args": {
+        "useFirstResult": "skip",
+        "command": "python3 do show_option build_dir",
+        "cwd": "${workspaceFolder}",
+      }
+    },
+    {
+      "id": "get_gcc_dir",
+      "type": "command",
+      "command": "shellCommand.execute",
+      "args": {
+        "useFirstResult": "skip",
+        "command": "python3 do show_option gcc_dir",
+        "cwd": "${workspaceFolder}",
+      }
+    },
+    {
+      "id": "get_exe_file",
+      "type": "command",
+      "command": "shellCommand.execute",
+      "args": {
+        "useFirstResult": "skip",
+        "command": "python3 do show_option exe_file",
+        "cwd": "${workspaceFolder}",
+      }
+    },
+  ]
+}
