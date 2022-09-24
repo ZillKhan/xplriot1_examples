@@ -1,7 +1,7 @@
 # Include ubxlib
 include($ENV{UBXLIB_DIR}/zephyr/ubxlib.cmake)
 # Add XPLR-IOT-1 specifics, remove this for other boards
-include(${CMAKE_CURRENT_LIST_DIR}/xplriot1/xplriot1.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/../config/xplriot1.cmake)
 # And Zephyr
 find_package(Zephyr HINTS $ENV{ZEPHYR_BASE})
 

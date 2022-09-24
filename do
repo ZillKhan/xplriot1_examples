@@ -15,6 +15,8 @@ from serial.tools import list_ports, miniterm
 
 settings = dict()
 has_jlink = False
+top_dir = os.path.dirname(os.path.realpath(__file__))
+examples_root = top_dir + "/examples/"
 
 def error_exit(mess):
     print(f"*** Error. {mess}")
@@ -55,7 +57,7 @@ def get_exe_file(args, signed):
 
 def build(args):
     print(f"=== {args.example} ===")
-    os.chdir(args.example)
+    os.chdir(examples_root + args.example)
     com = f"west build --board nrf5340dk_nrf5340_cpuapp --build-dir {args.build_dir}"
     if args.pristine:
         com += " --pristine"
@@ -113,7 +115,7 @@ def reset(args):
     if has_jlink:
         exec_command("nrfjprog -f nrf53 --reset")
     else:
-        exec_command(f"newtmgr --conntype serial --connstring \"{uart0},baud=115200\"")
+        error_exit("This operation requires a JLink unit")
 
 #--------------------------------------------------------------------
 
@@ -126,7 +128,7 @@ def run(args):
 def flash_bootloader(args):
     print("Flashing serial mcuboot bootloader...")
     exec_command(
-        "nrfjprog -f nrf53 --program xplriot1/mcuboot_serial.hex --sectorerase --reset --verify")
+        f"nrfjprog -f nrf53 --program {top_dir}/config/mcuboot_serial.hex --sectorerase --reset --verify")
 
 #--------------------------------------------------------------------
 
@@ -171,7 +173,7 @@ def show_option(args):
 
 def vscode(args):
     build(args)
-    os.chdir("../")
+    os.chdir(top_dir)
     vscode_dir = ".vscode"
     os.makedirs(vscode_dir, exist_ok=True)
     comp_path = re.sub(r"\$HOME", "${env:HOME}", settings['gcc_dir'])
@@ -195,7 +197,7 @@ def vscode(args):
     with open(vscode_dir + "/c_cpp_properties.json", "w") as f:
         f.write(properties)
 
-    exec_command(f"code examples.code-workspace -g {args.example}/src/main.c")
+    exec_command(f"code examples.code-workspace -g {examples_root}{args.example}/src/main.c")
 
 #--------------------------------------------------------------------
 
@@ -277,7 +279,7 @@ def check_directories(args):
     if args.build_dir != None:
         settings['build_dir'] = args.build_dir
     elif not 'build_dir' in settings:
-        settings['build_dir'] = this_dir + "/_build"
+        settings['build_dir'] = top_dir + "/_build"
     args.build_dir = settings['build_dir'] + "/" + args.example
 
 #--------------------------------------------------------------------
@@ -286,12 +288,11 @@ def check_directories(args):
 
 if __name__ == "__main__":
 
-    this_dir = os.path.dirname(os.path.realpath(__file__))
-    os.chdir(this_dir)
+    os.chdir(top_dir)
     check_jlink()
     examples = []
-    for entry in os.scandir("."):
-        if entry.is_dir() and exists(entry.name + "/src"):
+    for entry in os.scandir(examples_root):
+        if entry.is_dir() and exists(examples_root + entry.name + "/src"):
             examples.append(entry.name)
     examples.sort()
 
