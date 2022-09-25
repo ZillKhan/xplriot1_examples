@@ -20,7 +20,7 @@ echo Installing packages...
    1>nul 2>%ERR_FILE% || (type %ERR_FILE% & exit /b 1)
 set PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin
 call :SilentCom "choco install -y --no-progress cmake --installargs 'ADD_CMAKE_TO_PATH=System'"
-call :SilentCom "choco install -y --no-progress ninja gperf python3 git dtc-msys2 wget unzip nrfjprog tartool"
+call :SilentCom "choco install -y --no-progress ninja gperf python3 git dtc-msys2 wget unzip nrfjprog tartool ccache"
 call refreshenv >nul
 pip3 install -q west
 set TarFile=newtmgr.tar.gz
@@ -56,7 +56,7 @@ curl -s -L "https://code.visualstudio.com/sha/download?build=stable&os=win32-x64
 call refreshenv >nul
 del %CodeInstaller%
 echo Installing extensions...
-call :SilentCom "code --install-extension ms-vscode.cpptools"
+call :SilentCom "code --install-extension ms-vscode.cpptools-extension-pack"
 call :SilentCom "code --install-extension marus25.cortex-debug"
 
 echo Installing JLink software...

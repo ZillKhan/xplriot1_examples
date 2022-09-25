@@ -80,7 +80,7 @@ echo "Installing Visual Studio Code..."
 wget -q "https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64" -O $VSCODE_DEB
 silent_com $APT_COM install $VSCODE_DEB >/dev/null
 rm $VSCODE_DEB
-silent_com code --install-extension ms-vscode.cpptools
+silent_com code --install-extension ms-vscode.cpptools-extension-pack
 silent_com code --install-extension marus25.cortex-debug
 
 if [ ! -f "`which JLinkConfig`" ]; then
@@ -107,7 +107,7 @@ echo "All done!"
 eval "echo Elapsed time: $(date -ud "@$elapsed" +'%M min %S sec')"
 echo
 echo "**** Please note that the PATH has been updated."
-echo "**** Log out and in again or run 'source $Home/.profile'"
+echo "**** Log out and in again or run 'source $HOME/.profile'"
 echo "**** in all command windows before starting any builds."
 
 

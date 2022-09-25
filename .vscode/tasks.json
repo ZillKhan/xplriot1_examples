@@ -3,7 +3,12 @@
   "tasks": [
     {
       "label": "Build example",
-      "command": "python3 do build -e ${command:cpptools.activeConfigName}",
+      "linux": {
+        "command": "python3 do build -e ${command:cpptools.activeConfigName}",
+      },
+      "windows": {
+        "command": "python do build -e ${command:cpptools.activeConfigName}",
+      },
       "group": "build",
       "problemMatcher": [
         "$gcc"
@@ -20,7 +25,12 @@
     },
     {
       "label": "Rebuild example",
-      "command": "python3 do build -e ${command:cpptools.activeConfigName} -p",
+      "linux": {
+        "command": "python3 do build -e ${command:cpptools.activeConfigName} -p",
+      },
+      "windows": {
+        "command": "python do build -e ${command:cpptools.activeConfigName} -p",
+      },
       "group": "build",
       "problemMatcher": [
         "$gcc"
@@ -37,7 +47,12 @@
     },
     {
       "label": "Flash example",
-      "command": "python3 do flash -e ${command:cpptools.activeConfigName}",
+      "linux": {
+        "command": "python3 do flash -e ${command:cpptools.activeConfigName}",
+      },
+      "windows": {
+        "command": "python do flash -e ${command:cpptools.activeConfigName}",
+      },
       "group": "build",
       "problemMatcher": [
         "$gcc"
@@ -64,7 +79,12 @@
     },
     {
       "label": "FlashWhenChanged",
-      "command": "python3 do flash -e ${command:cpptools.activeConfigName} --when-changed",
+      "linux": {
+        "command": "python3 do flash -e ${command:cpptools.activeConfigName} --when-changed",
+      },
+      "windows": {
+        "command": "python do build -e ${command:cpptools.activeConfigName} --when-changed",
+      },
       "problemMatcher": [
         "$gcc"
       ],
@@ -80,7 +100,12 @@
     },
     {
       "label": "Reset",
-      "command": "python3 do reset",
+      "linux": {
+        "command": "python3 do reset",
+      },
+      "windows": {
+        "command": "python do reset",
+      },
       "problemMatcher": [
         "$gcc"
       ],
@@ -104,7 +129,12 @@
     {
       "label": "Serial monitor",
       "type": "shell",
-      "command": "python3 do monitor",
+      "linux": {
+        "command": "python3 do monitor",
+      },
+      "windows": {
+        "command": "python do monitor",
+      },
       "options": {
         "cwd": "${workspaceFolder}"
       },

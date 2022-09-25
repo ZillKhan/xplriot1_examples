@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 
-# https://www.silabs.com/documents/public/software/CP210x_Universal_Windows_Driver.zip
+# do
+#
+# Wrapper command for building and flashing the XPLR-IOT-1 examples
+#
 
 import os
 import sys
@@ -178,6 +181,10 @@ def vscode(args):
     os.makedirs(vscode_dir, exist_ok=True)
     comp_path = re.sub(r"\$HOME", "${env:HOME}", settings['gcc_dir'])
     properties = '{\n"version": 4,\n"configurations": ['
+    # No known way to select active configuration.
+    # Therefor the list is sorted reversely as the last config will
+    # be chosen the first time the project is opened.
+    examples.sort(reverse=True)
     for ex in examples:
         properties += (
         '    {\n'
@@ -194,6 +201,7 @@ def vscode(args):
         )
     properties = re.sub(r",\n$", "\n", properties)
     properties += "  ]\n}\n"
+    properties = re.sub(r"\\", "/", properties)
     with open(vscode_dir + "/c_cpp_properties.json", "w") as f:
         f.write(properties)
 
