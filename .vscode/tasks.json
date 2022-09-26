@@ -72,7 +72,7 @@
       "group": "build",
       "dependsOrder": "sequence",
       "dependsOn": [
-        "FlashWhenChanged",
+        "Flash example",
         "Serial monitor",
         "Reset"
       ]

@@ -28,6 +28,7 @@ static void blinkTask(void *pParameters)
 void main()
 {
     uPortInit();
+    uPortLog("Blink program started\n");
     uPortTaskHandle_t taskHandle;
     uPortTaskCreate(blinkTask,
                     "twinkle",
