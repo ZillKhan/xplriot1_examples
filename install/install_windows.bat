@@ -58,6 +58,7 @@ del %CodeInstaller%
 echo Installing extensions...
 call :SilentCom "code --install-extension ms-vscode.cpptools-extension-pack"
 call :SilentCom "code --install-extension marus25.cortex-debug"
+call :SilentCom "code --uninstall-extension ms-vscode.cmake-tools"
 
 echo Installing JLink software...
 set JLinkExe=JLink_Windows_x86_64.exe

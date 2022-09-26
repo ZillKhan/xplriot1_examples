@@ -19,7 +19,7 @@ const struct device *gpAdxl345Device;
   {                                                                                                             \
     p = DEVICE_DT_GET_ANY(sensor_name);                                                                         \
     if (p && device_is_ready(p)) {                                                                              \
-      printf("Found device \"%s\", on I2C address 0x%02x \n", p->name, DT_REG_ADDR(DT_INST(0, sensor_name))); \
+      printf("Found device \"%s\", on I2C address 0x%02x \n", p->name, DT_REG_ADDR(DT_INST(0, sensor_name)));   \
     }                                                                                                           \
   }
 

@@ -82,6 +82,7 @@ silent_com $APT_COM install $VSCODE_DEB >/dev/null
 rm $VSCODE_DEB
 silent_com code --install-extension ms-vscode.cpptools-extension-pack
 silent_com code --install-extension marus25.cortex-debug
+silent_com code --uninstall-extension ms-vscode.cmake-tools
 
 if [ ! -f "`which JLinkConfig`" ]; then
   echo "Installing JLink software..."
