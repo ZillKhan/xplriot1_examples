@@ -3,10 +3,5 @@
 		{
 			"path": "."
 		}
-	],
-	"settings": {
-		"files.associations": {
-			"u_port_gpio.h": "c"
-		}
-	}
+	]
 }

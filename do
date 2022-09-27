@@ -306,7 +306,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("operation", nargs='+',
-                        help="Operation to be performed",
+                        help="Operation to be performed: vscode, build, flash, run, monitor, debug",
                         )
     parser.add_argument("-e", "--example",
                         help="Name of the example",
