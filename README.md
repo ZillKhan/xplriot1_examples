@@ -84,6 +84,8 @@ You can then start modifying the examples to you liking or add your own, more ab
 
 All the operations performed in this repo are controlled by one central command named "do". This command is executed as described above in a command window with the default directory set to the root of the repo.
 
+Please note that if you have installed the nRFConnect SDK via the "Toolchain Manager" desktop app you may have to start the command prompt via the corresponding entry in the dropdown list. This is the case if Python is not available in your standard path.
+
 Below is the help information for the command as shown when issuing "do --help". More thorough description below.
 
     usage: do [-h] [-e EXAMPLE] [-p] [--no-bootloader] [--when-changed] [-d BUILD_DIR]
