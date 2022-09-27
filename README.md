@@ -48,6 +48,8 @@ Once you have everything installed and have connected your XPLR-IOT-1, you can s
 
 Begin by starting a command window. Then change working directory to where the repository was cloned. If you have used the installation script this will be in a directory underneath your home directory named xplriot1\xplriot1_examples.
 
+Please note that if you have installed the nRFConnect SDK via the "Toolchain Manager" desktop app you may have to start the command prompt via the corresponding entry in the dropdown list. This is the case if Python is not available in your standard path.
+
 Then issue the following command:
 
 Windows:
@@ -83,8 +85,6 @@ You can then start modifying the examples to you liking or add your own, more ab
 # Advanced usage
 
 All the operations performed in this repo are controlled by one central command named "do". This command is executed as described above in a command window with the default directory set to the root of the repo.
-
-Please note that if you have installed the nRFConnect SDK via the "Toolchain Manager" desktop app you may have to start the command prompt via the corresponding entry in the dropdown list. This is the case if Python is not available in your standard path.
 
 Below is the help information for the command as shown when issuing "do --help". More thorough description below.
 
