@@ -50,9 +50,9 @@ def find_uart0():
 
 #--------------------------------------------------------------------
 
-def get_exe_file(args, signed):
-    file_ext = ".hex" if has_jlink else ".bin"
-    file_name = f"{args.build_dir}/zephyr/zephyr"
+def get_exe_file(args, signed, use_jlink, net_cpu = False):
+    file_ext = ".hex" if use_jlink else ".bin"
+    file_name = f"{args.build_dir}/zephyr/zephyr" if not net_cpu else f"{args.build_dir}/hci_rpmsg/zephyr/zephyr"
     file_type = "_signed" if signed else ""
     return file_name + file_type + file_ext
 
@@ -66,15 +66,18 @@ def build(args):
         com += " --pristine"
     start = time()
     if exec_command(com) == 0:
-        exe_file = get_exe_file(args, False)
-        if not args.no_bootloader and os.path.getmtime(exe_file) > start:
+        path = f"{args.build_dir}/zephyr/zephyr"
+        if not args.no_bootloader and os.path.getmtime(get_exe_file(args, False, False, False)) > start:
             mcuboot_dir = settings['ncs_dir'] + "/bootloader/mcuboot"
-            sign_com = (f"{sys.executable} {mcuboot_dir}/scripts/imgtool.py sign"
-                        f" --key {mcuboot_dir}/root-rsa-2048.pem"
-                        " --header-size 0x200 --align 4 --version 0.0.0+0"
-                        " --pad-header --slot-size 0xe0000"
-                        f" {exe_file} {get_exe_file(args, True)}")
-            exec_command(sign_com)
+            for use_jlink in (False, True):
+                if exists(get_exe_file(args, False, use_jlink)):
+                    sign_com = (f"{sys.executable} {mcuboot_dir}/scripts/imgtool.py sign"
+                                f" --key {mcuboot_dir}/root-rsa-2048.pem"
+                                " --header-size 0x200 --align 4 --version 0.0.0+0"
+                                " --pad-header --slot-size 0xe0000"
+                                f" {get_exe_file(args, False, use_jlink)}"
+                                f" {get_exe_file(args, True, use_jlink)}")
+                    exec_command(sign_com)
             return 1
     else:
         error_exit("Build failed")
@@ -82,26 +85,38 @@ def build(args):
 
 #--------------------------------------------------------------------
 
-def flash(args):
-    if build(args) == 0 and args.when_changed:
-        return
-    flash_file = get_exe_file(args, not args.no_bootloader)
+def flash_file(file_name, net_cpu = False):
+    if not exists(file_name):
+        error_exit(f"File not found: {file_name}")
     if has_jlink:
-        print("Flashing using jlink")
-        com = f"nrfjprog -f nrf53 --program {flash_file} --sectorerase --verify --reset"
-    elif not args.no_bootloader:
+        print(f"Flashing {file_name} using jlink")
+        cpu = "CP_APPLICATION" if not net_cpu else "CP_NETWORK"
+        com = f"nrfjprog -f nrf53 --coprocessor {cpu} --program {file_name} --sectorerase --verify --reset"
+    else:
         print("Flashing using serial port")
         uart0 = find_uart0()
         print("Restart the XPLR-IOT-1 simultaneously pressing button 1")
         input("Press return when ready: ")
         serial_flash_com = f"newtmgr --conntype serial --connstring \"{uart0},baud=115200\""
-        com = f"{serial_flash_com} image upload {flash_file}"
-    else:
-        error_exit("Can not do serial flash without bootloader")
+        com = f"{serial_flash_com} image upload {file_name}"
+
     exec_command(com)
     if not has_jlink:
         print("Restarting")
         exec_command(f"{serial_flash_com} reset")
+
+#--------------------------------------------------------------------
+
+def flash(args):
+    if build(args) == 0 and args.when_changed:
+        return
+    flash_file(get_exe_file(args, not args.no_bootloader, has_jlink, False))
+
+#--------------------------------------------------------------------
+
+def flash_net(args):
+    flash_file(get_exe_file(args, False, has_jlink, True), True)
+
 
 #--------------------------------------------------------------------
 
@@ -163,7 +178,7 @@ def show_option(args):
     elif args.operation[1] == "gcc_dir":
         res = os.path.expandvars(settings['gcc_dir'])
     elif args.operation[1] == "exe_file":
-        res = os.path.basename(get_exe_file(args, not args.no_bootloader))
+        res = os.path.basename(get_exe_file(args, not args.no_bootloader, has_jlink))
     elif args.operation[1] == "list_ex":
         res = ""
         for ex in examples:
@@ -227,7 +242,7 @@ def check_directories(args):
     if args.ncs_dir != None:
         settings['ncs_dir'] = args.ncs_dir
     elif not 'ncs_dir' in settings:
-        ncs_dir = os.environ['HOME'] if 'linux' in sys.platform else os.environ['HOMEDRIVE']
+        ncs_dir = os.environ['HOME'] if 'linux' in sys.platform else os.environ['SystemDrive']
         ncs_dir += "/ncs"
         version = ""
         if exists(ncs_dir):
@@ -251,6 +266,8 @@ def check_directories(args):
         m = re.search(r"(v\d\.\d\.\d)", settings['ncs_dir'])
         if m:
             tc_dir = settings['ncs_dir'] + "/../toolchains/" + m.group(1)
+            if not exists(tc_dir):
+                tc_dir = settings['ncs_dir'] + "/toolchain"
             if exists(tc_dir):
                 # Setup and use a complete ncs toolchain
                 use_tc = True

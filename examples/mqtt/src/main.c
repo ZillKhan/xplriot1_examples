@@ -34,9 +34,10 @@ static const uNetworkType_t gNetworkType = U_NETWORK_TYPE_WIFI;
 uDeviceCfg_t gDeviceCfg;
 
 // Callback for unread message indications.
-static void messageIndicationCallback(int32_t numUnread, void *pParam) {
-  bool *pMessagesAvailable = (bool *)pParam;
-  *pMessagesAvailable = true;
+static void messageIndicationCallback(int32_t numUnread, void *pParam)
+{
+    bool *pMessagesAvailable = (bool *)pParam;
+    *pMessagesAvailable = true;
 }
 
 void main()
@@ -56,68 +57,68 @@ void main()
         printf("Bringing up the network...\n");
         errorCode = uNetworkInterfaceUp(deviceHandle, gNetworkType, &gNetworkCfg);
         if (errorCode == 0) {
-          uMqttClientContext_t *pContext = pUMqttClientOpen(deviceHandle, NULL);
-          if (pContext != NULL) {
-            uMqttClientConnection_t connection = U_MQTT_CLIENT_CONNECTION_DEFAULT;
-            volatile bool messagesAvailable = false;
-            char topic[32];
+            uMqttClientContext_t *pContext = pUMqttClientOpen(deviceHandle, NULL);
+            if (pContext != NULL) {
+                uMqttClientConnection_t connection = U_MQTT_CLIENT_CONNECTION_DEFAULT;
+                volatile bool messagesAvailable = false;
+                char topic[32];
 
-            connection.pBrokerNameStr = BROKER_NAME;
-            if (uMqttClientConnect(pContext, &connection) == 0) {
-              uMqttClientSetMessageCallback(pContext,
-                                            messageIndicationCallback,
-                                            (void *)&messagesAvailable);
-              // Get a unique topic name for this test
-              uSecurityGetSerialNumber(deviceHandle, topic);
-              if (uMqttClientSubscribe(pContext, topic,
-                                       U_MQTT_QOS_EXACTLY_ONCE)) {
-                printf("----------------------------------------------\n");
-                printf("To view the mqtt messages from this device use:\n");
-                printf("mosquitto_sub -h %s -t %s -v\n", BROKER_NAME, topic);
-                printf("To send mqtt messages to this device use:\n");
-                printf("mosquitto_pub -h %s -t %s -m message\n", BROKER_NAME, topic);
-                printf("Send message \"exit\" to disconnect\n");
-                bool done = false;
-                int i = 0;
-                while (!done) {
-                  char buffer[25];
-                  if (messagesAvailable) {
-                    char buffer[25];
-                    while (uMqttClientGetUnread(pContext) > 0) {
-                      size_t cnt = sizeof(buffer)-1;
-                      if (uMqttClientMessageRead(pContext, topic,
-                                                 sizeof(topic),
-                                                 buffer, &cnt,
-                                                 NULL) == 0) {
-                        buffer[cnt] = 0;
-                        printf("Received message: %s\n", buffer);
-                        done = strstr(buffer, "exit");
-                      }
+                connection.pBrokerNameStr = BROKER_NAME;
+                if (uMqttClientConnect(pContext, &connection) == 0) {
+                    uMqttClientSetMessageCallback(pContext,
+                                                  messageIndicationCallback,
+                                                  (void *)&messagesAvailable);
+                    // Get a unique topic name for this test
+                    uSecurityGetSerialNumber(deviceHandle, topic);
+                    if (uMqttClientSubscribe(pContext, topic,
+                                             U_MQTT_QOS_EXACTLY_ONCE)) {
+                        printf("----------------------------------------------\n");
+                        printf("To view the mqtt messages from this device use:\n");
+                        printf("mosquitto_sub -h %s -t %s -v\n", BROKER_NAME, topic);
+                        printf("To send mqtt messages to this device use:\n");
+                        printf("mosquitto_pub -h %s -t %s -m message\n", BROKER_NAME, topic);
+                        printf("Send message \"exit\" to disconnect\n");
+                        bool done = false;
+                        int i = 0;
+                        while (!done) {
+                            char buffer[25];
+                            if (messagesAvailable) {
+                                char buffer[25];
+                                while (uMqttClientGetUnread(pContext) > 0) {
+                                    size_t cnt = sizeof(buffer) - 1;
+                                    if (uMqttClientMessageRead(pContext, topic,
+                                                               sizeof(topic),
+                                                               buffer, &cnt,
+                                                               NULL) == 0) {
+                                        buffer[cnt] = 0;
+                                        printf("Received message: %s\n", buffer);
+                                        done = strstr(buffer, "exit");
+                                    }
+                                }
+                                messagesAvailable = false;
+                            } else {
+                                snprintf(buffer, sizeof(buffer), "Hello #%d", ++i);
+                                uMqttClientPublish(pContext, topic, buffer,
+                                                   strlen(buffer),
+                                                   U_MQTT_QOS_EXACTLY_ONCE,
+                                                   false);
+                            }
+                            uPortTaskBlock(1000);
+                        }
+                    } else {
+                        printf("* Failed to subscribe to topic: %s\n", topic);
                     }
-                    messagesAvailable = false;
-                  } else {
-                    snprintf(buffer, sizeof(buffer), "Hello #%d", ++i);
-                    uMqttClientPublish(pContext, topic, buffer,
-                                       strlen(buffer),
-                                       U_MQTT_QOS_EXACTLY_ONCE,
-                                       false);
-                  }
-                  uPortTaskBlock(1000);
+                    uMqttClientDisconnect(pContext);
+                } else {
+                    printf("* Failed to connect to the mqtt broker\n");
                 }
-              } else {
-                printf("* Failed to subscribe to topic: %s\n", topic);
-              }
-              uMqttClientDisconnect(pContext);
+
             } else {
-              printf("* Failed to connect to the mqtt broker\n");
+                printf("* Failed to create mqtt instance !\n ");
             }
 
-          } else {
-            printf("* Failed to create mqtt instance !\n ");
-          }
-
-          printf("Closing down the network...\n");
-          uNetworkInterfaceDown(deviceHandle, gNetworkType);
+            printf("Closing down the network...\n");
+            uNetworkInterfaceDown(deviceHandle, gNetworkType);
         } else {
             printf("* Failed to bring up the network: %d\n", errorCode);
         }

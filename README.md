@@ -34,7 +34,7 @@ You also need a 10 pin programmer cable to connect the XPLR-IOT-1 and the progra
 ![Jlink](readme_images/jlink.png)
 ![EVK](readme_images/evk.png)
 
-However it is still possible to build and flash the examples into an XPLR-IOT-1 without a programmer. This is then made through a usb cable connected to the unit. No debugging is however possible in this case.
+However it is still possible to build and flash the examples into an XPLR-IOT-1 without a programmer. This is then made through a usb cable connected to the unit. No debugging is however possible in this case. Please note that this type of flashing requires the "mewtmgr" program. This is installed automatically by the installation scripts of this repo, but if you have done a manual installation you have to add this manually as well and make sure it is in your path. It is available for download [from here](https://archive.apache.org/dist/mynewt/apache-mynewt-1.4.1)
 
 Please note that the usb cable should also be inserted if you want to see printouts from the example programs.
 
@@ -132,13 +132,6 @@ The --example option is used to specify which example to build. If not specified
 
 There will be a automatic search for examples among the directories so if you add your own that will be inlcuded as well in the list of choosables.
 
-### Bootloader
-By default the mcuboot bootloader which is available in a fresh XPLR-IOT-1 will be kept. If you don't want that then use the option:
-
-    --no-bootloader
-
-Should you later want to change this you can use the operation "flash_bootloader"
-
 ### Directory specification
 
 There are some directories which are needed to be defined for the build process. These have default values depending on how the installation is made but can always be overridden by the options below:
@@ -171,4 +164,26 @@ There are some cmake variables you can define for controlling these files.
 | ----------- | ----------- |
 | NO_SENSORS | When set i2c is not included in the build and this enables the use of all 4 uarts. This means that both the Nina W15 and the Sara R5 modules can be used at the same time |
 | EXT_FS | Enables use of a file system on the external SPI-flash memory. Used in the "filesystem" example|
+
+### Bootloader
+
+By default the mcuboot bootloader which is available in a fresh XPLR-IOT-1 will be kept. If you don't want that then use the option:
+
+    --no-bootloader
+
+Should you later want to change this you can use the operation "flash_bootloader"
+
+### Network cpu
+
+The network cpu of the host nrf5340 is not used in most of the examples. However if the Bluetooth functionality is to be used in the host (and not in the Nina module), a firmware for the network cpu has to be built and flashed. The build is done automatically whenever the KConfig setting CONFIG_BT is set.
+
+To flash the built network cpu firmware the following command must be used after a successful build of the example:
+
+    do flash_net
+
+This is only required to be done once.
+
+Please note that this command will only work for examples that has defined CONFIG_BT. Currently there are two examples that do this, ibeacon and scanner. In this case the command will be for ibeacon:
+
+    do flash_net -e ibeacon
 

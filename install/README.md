@@ -8,7 +8,7 @@ The scripts will also install git and clone the actual repository.
 
 ## Windows
 
-[Click this link](https://github.com/plerup/xplriot1_examples/raw/master/install/install_windows.bat) and then chose "Save as" in the browser to download the installation script for Windows. Then right click on the downloaded file and select "Run as administrator". The installation will then start and it is quite a lengthy process, typically ~10 min.
+[Click this link](https://github.com/plerup/xplriot1_examples/raw/master/install/install_windows.bat) and then chose "Save as" in the browser to download the installation script for Windows. Then right click on the downloaded file and select "Run as administrator". The installation will then start and it is quite a lengthy process, typically ~10 min. **Please avoid** clicking in the window of this operation if you have "Quick Edit" for command windows enabled. Doing so may halt the downloading process which in turn can lead to timeouts and later problems for the installation.
 
 The [chocolatey](https://chocolatey.org/) package manager is used for installing the required tools. The required drivers for the XPLR-IOT-1 serial ports will also be installed.
 

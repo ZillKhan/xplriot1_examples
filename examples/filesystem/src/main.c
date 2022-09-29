@@ -76,8 +76,8 @@ void creatOneFile()
     const char *path = getFileNamePath("hello.txt");
     const char *line = "Hello world\n";
     if (fs_open(&file, path, FS_O_CREATE | FS_O_WRITE) == 0) {
-      fs_write(&file, line, strlen(line));
-      fs_close(&file);
+        fs_write(&file, line, strlen(line));
+        fs_close(&file);
     }
 }
 
@@ -89,9 +89,9 @@ void main()
     gMountPoint->storage_dev = 0;
 #endif
     if (fs_mount(gMountPoint) == 0) {
-      creatOneFile();
-      list_fs();
-      showBootCount();
+        creatOneFile();
+        list_fs();
+        showBootCount();
     } else {
         printf("Failed to mount the file system\n");
     }
