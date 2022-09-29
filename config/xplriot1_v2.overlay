@@ -118,6 +118,21 @@
 	ch2-pin = <6>;
 };
 
+&led0 {
+	gpios = <&gpio1 7 GPIO_ACTIVE_LOW>;
+	label = "Red LED";
+};
+
+&led1 {
+	gpios = <&gpio0 23 GPIO_ACTIVE_LOW>;
+	label = "Green LED";
+};
+
+&led2 {
+	gpios = <&gpio0 6 GPIO_ACTIVE_LOW>;
+	label = "Blue LED";
+};
+
 // Leds at PWM channels
 /{
 	pwmleds {
