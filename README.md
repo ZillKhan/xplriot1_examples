@@ -1,7 +1,7 @@
 # Learning by examples
 
-This repo is intended to be a starting point on learning how to use the Ublox open source library [ubxlib](https://github.com/u-blox/ubxlib). The intended target system here is the [XPLR-IOT-1](https://www.u-blox.com/en/product/XPLR-IOT-1) device but most of the examples are also applicable to
-any Ublox module or EVK supported by ubxlib.
+This repo is intended to be a starting point on learning how to use the u-blox open source library [ubxlib](https://github.com/u-blox/ubxlib). The intended target system here is the [XPLR-IOT-1](https://www.u-blox.com/en/product/XPLR-IOT-1) device but most of the examples are also applicable to
+any u-blox module or EVK supported by ubxlib.
 
 ![ubxlib](readme_images/ubxlib-logo.png)
 ![XPLR_IOT-1](readme_images/XPLR-IOT-1.png)
@@ -26,7 +26,7 @@ It also works if you have your own tailored installation. You just have to speci
 
 # Requirements
 
-To use this repo you need at least an XPLR-IOT-1 device. Please note though that this device doesn't contain any debug chip so in order to be able to do debugging you need to have some kind of debugger/programmer device. This can be a JLink debugger, a Ublox EVK or a Nordic Development board.
+To use this repo you need at least an XPLR-IOT-1 device. Please note though that this device doesn't contain any debug chip so in order to be able to do debugging you need to have some kind of debugger/programmer device. This can be a JLink debugger, a u-blox EVK or a Nordic Development board.
 
 You also need a 10 pin programmer cable to connect the XPLR-IOT-1 and the programmer. Examples shown below:
 
@@ -156,7 +156,7 @@ This directory contains the specifics for handling the XPLR-IOT-1 in Zephyr.
 
 The files here are mainly overlay files used to override the specific settings for XPLR-IOT-1 when using the nrf5340dk board files.
 
-Here is also a c-file for defining the default gpio pins etc and setting them to enable the different Ublox modules automatically from ubxlib.
+Here is also a c-file for defining the default gpio pins etc and setting them to enable the different u-blox modules automatically from ubxlib.
 
 There are some cmake variables you can define for controlling these files.
 
