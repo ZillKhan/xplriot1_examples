@@ -57,13 +57,13 @@ static void button_thread(void)
 {
     while (true) {
         k_sem_take(&button_semaphore, K_FOREVER);
-        int button_no = gpio_pin_get_dt(&buttons[0]) ? 0 : 1;
+        int button_no = gpio_pin_get(buttons[0].port, buttons[0].pin) ? 0 : 1;
         uint32_t start = k_uptime_get_32();
         k_sleep(K_MSEC(100)); // Debounce
 
         button_cb(button_no, 0);
-        while (gpio_pin_get_dt(&buttons[button_no])) {
-            k_sleep(K_MSEC(10));
+        while (gpio_pin_get(buttons[button_no].port, buttons[button_no].pin)) {
+          k_sleep(K_MSEC(10));
         }
 
         button_cb(button_no, k_uptime_get_32() - start);
@@ -76,8 +76,8 @@ static void button_thread(void)
 
 // LEDs and main
 
-#define LED_ON  0
-#define LED_OFF 1
+#define LED_ON  gpio_pin_set(leds[curr_led].port, leds[curr_led].pin, 0)
+#define LED_OFF gpio_pin_set(leds[curr_led].port, leds[curr_led].pin, 1)
 static struct gpio_dt_spec leds[] = {
     GPIO_DT_SPEC_GET_OR(DT_ALIAS(led0), gpios, {0}),
     GPIO_DT_SPEC_GET_OR(DT_ALIAS(led1), gpios, {0}),
@@ -92,16 +92,16 @@ void button_pressed(int button_no, uint32_t hold_time)
     if (!hold_time) {
         printf("Button %d down\n", button_no);
         if (button_no == 0) {
-            gpio_pin_set_dt(&leds[curr_led], LED_OFF);
+          LED_OFF;
         } else {
-            gpio_pin_set_dt(&leds[curr_led], LED_OFF);
+            LED_OFF;
             curr_led = (curr_led + 1) % led_cnt;
-            gpio_pin_set_dt(&leds[curr_led], LED_ON);
+            LED_ON;
         }
     } else {
         printf("Button %d up. Hold time: %u ms\n", button_no, hold_time);
         if (button_no == 0) {
-            gpio_pin_set_dt(&leds[curr_led], LED_ON);
+            LED_ON;
         }
     }
 }
@@ -115,7 +115,7 @@ void main(void)
     for (int i = 0; i < led_cnt; i++) {
         if (device_is_ready(leds[i].port) && gpio_pin_configure_dt(&leds[i], GPIO_OUTPUT) == 0) {
             if (i == curr_led) {
-                gpio_pin_set_dt(&leds[i], LED_ON);
+                LED_ON;
             }
         } else {
             printf("* Failed to setup led %d\n", i);

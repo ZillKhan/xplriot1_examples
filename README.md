@@ -20,7 +20,7 @@ If you already have the Nordic nRFConnect SDK installed and know how to use it, 
 
 On the other hand if this is your first encounter with the Nordic nrf53 chipset and possibly also with git, a complete installation script which includes everything needed for development is provided. In this case [goto this page](install/README.md) for more information about the installation process.
 
-You can of course also install everything yourself following the instructions at the [Nordic web site](https://www.nordicsemi.com/Products/Development-software/nrf-connect-sdk). The repository has been tested with nRF Connect versions 1.5.0 up to 2.1.0.
+You can of course also install everything yourself following the instructions at the [Nordic web site](https://www.nordicsemi.com/Products/Development-software/nrf-connect-sdk). The repository has been tested with nRF Connect versions 1.6.1 up to 2.1.0.
 
 It also works if you have your own tailored installation. You just have to specify where to find the nRFConnect environment parts. More about this below.
 
