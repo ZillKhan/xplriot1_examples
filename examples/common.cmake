@@ -16,6 +16,10 @@
 include($ENV{UBXLIB_DIR}/zephyr/ubxlib.cmake)
 # Add XPLR-IOT-1 specifics, remove this for other boards
 include(${CMAKE_CURRENT_LIST_DIR}/../config/xplriot1.cmake)
+# Set debug compiler settings as default
+if (NOT NO_DEBUG)
+  list(APPEND CONF_FILE ${CMAKE_CURRENT_LIST_DIR}/debug.conf)
+endif()
 # And Zephyr
 find_package(Zephyr HINTS $ENV{ZEPHYR_BASE})
 # All example source code

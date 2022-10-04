@@ -164,6 +164,7 @@ There are some cmake variables you can define for controlling these files.
 | ----------- | ----------- |
 | NO_SENSORS | When set i2c is not included in the build and this enables the use of all 4 uarts. This means that both the Nina W15 and the Sara R5 modules can be used at the same time |
 | EXT_FS | Enables use of a file system on the external SPI-flash memory. Used in the "filesystem" example|
+| NO_DEBUG | By default debug optimization is used for compilation. Set this variable to disable that|
 
 ### Bootloader
 
