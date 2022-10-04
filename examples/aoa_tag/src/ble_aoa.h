@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-/*
- *
- * Hello world application using ubxlib
- *
+#include <stdint.h>
+#include <stdbool.h>
+
+/** Initiate BLE for angle of arrival advertisements
+ * @return       Success or failure.
  */
+bool bleAoaInit();
 
-#include "ubxlib.h"
-
-void main()
-{
-    uPortInit();
-    int i = 0;
-    while (1) {
-        uPortLog("Hello #%3d\n", ++i);
-        uPortTaskBlock(5000);
-    }
-}
+/** Start or stop angle of arrival advertisements
+ * @param min_ms Minimum advertisement time in milliseconds.
+ * @param max_ms Maximum advertisement time in milliseconds.
+ * @param on     Start or stop.
+ * @return       Success or failure.
+ */
+bool bleAoaAdvertise(uint16_t min_ms, uint16_t max_ms, bool on);

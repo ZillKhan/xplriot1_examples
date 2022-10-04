@@ -1,5 +1,18 @@
 #!/usr/bin/env python3
 
+# Copyright 2022 u-blox
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#  http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+
 # do
 #
 # Wrapper command for building and flashing the XPLR-IOT-1 examples
@@ -197,9 +210,10 @@ def vscode(args):
     comp_path = re.sub(r"\$HOME", "${env:HOME}", settings['gcc_dir'])
     properties = '{\n"version": 4,\n"configurations": ['
     # No known way to select active configuration.
-    # Therefor the list is sorted reversely as the last config will
-    # be chosen the first time the project is opened.
-    examples.sort(reverse=True)
+    # Therefor put the default blink example last in the list
+    # as it will be chosen the first time the project is opened.
+    examples.remove("blink")
+    examples.append("blink")
     for ex in examples:
         properties += (
         '    {\n'
@@ -242,18 +256,21 @@ def check_directories(args):
     if args.ncs_dir != None:
         settings['ncs_dir'] = args.ncs_dir
     elif not 'ncs_dir' in settings:
-        ncs_dir = os.environ['HOME'] if 'linux' in sys.platform else os.environ['SystemDrive']
-        ncs_dir += "/ncs"
-        version = ""
-        if exists(ncs_dir):
-            # Find latest installed version
-            for entry in os.scandir(ncs_dir):
-                if entry.is_dir() and re.search(r"v\d\.\d\.\d", entry.name):
-                    version = entry.name
-        if not version:
-            error_exit("Failed to detect suitable nRFConnect directory")
-        settings['ncs_dir'] = ncs_dir + "/" + version
-        print(f"Using ncs version: {version}")
+        if 'ZEPHYR_BASE' in os.environ:
+            settings['ncs_dir'] = os.path.realpath(os.environ['ZEPHYR_BASE'] + "/..")
+        else:
+            ncs_dir = os.environ['HOME'] if 'linux' in sys.platform else os.environ['SystemDrive']
+            ncs_dir += "/ncs"
+            version = ""
+            if exists(ncs_dir):
+                # Find latest installed version
+                for entry in os.scandir(ncs_dir):
+                    if entry.is_dir() and re.search(r"v\d\.\d\.\d", entry.name):
+                        version = entry.name
+            if not version:
+                error_exit("Failed to detect suitable nRFConnect directory")
+            settings['ncs_dir'] = ncs_dir + "/" + version
+            print(f"Using ncs version: {version}")
     if not exists(os.path.expandvars(settings['ncs_dir'])):
         error_exit("nRFConnect directory not found")
 
@@ -279,6 +296,7 @@ def check_directories(args):
                     path += tc_dir + "/opt/bin:"
                     path += tc_dir + "/opt/nanopb/generator-bin:"
                     path += tc_dir + "opt/zephyr-sdk/arm-zephyr-eabi/bin"
+                    settings['gcc_dir'] = tc_dir + "opt/zephyr-sdk/arm-zephyr-eabi"
                 else:
                     path += tc_dir + ";"
                     path += tc_dir + "\\mingw64\\bin;"
@@ -287,6 +305,7 @@ def check_directories(args):
                     path += tc_dir + "\\opt\\bin\\Scripts;"
                     path += tc_dir + "\\opt/nanopb\\generator-bin;"
                     path += tc_dir + "\\opt\\zephyr-sdk\\arm-zephyr-eabi\\bin;"
+                    settings['gcc_dir'] = tc_dir + "\\opt\\zephyr-sdk\\arm-zephyr-eabi"
                 os.environ['PATH'] = path + os.environ['PATH']
         if not use_tc:
             error_exit("Failed to locate GCC directory")

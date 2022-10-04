@@ -1,25 +1,31 @@
 /*
-
-  Example showing how to use the buttons (and leds) in the XPLR-IOT-1
-
-*/
-
-#include <stdio.h>
+ * Copyright 2022 u-blox
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #include <zephyr.h>
 #include <device.h>
 #include <drivers/gpio.h>
 
-// Button handling
-
-typedef void (*button_cb_t)(int button_no, uint32_t hold_time);
+#include "buttons.h"
 
 static struct k_sem button_semaphore;
 static const struct gpio_dt_spec buttons[] = {
     GPIO_DT_SPEC_GET_OR(DT_ALIAS(sw0), gpios, {0}),
     GPIO_DT_SPEC_GET_OR(DT_ALIAS(sw1), gpios, {0}),
 };
-const int button_cnt = sizeof(buttons) / sizeof(buttons[0]);
+static const int button_cnt = sizeof(buttons) / sizeof(buttons[0]);
 static struct gpio_callback button_cb_data;
 static button_cb_t button_cb = NULL;
 
@@ -59,11 +65,11 @@ static void button_thread(void)
         k_sem_take(&button_semaphore, K_FOREVER);
         int button_no = gpio_pin_get(buttons[0].port, buttons[0].pin) ? 0 : 1;
         uint32_t start = k_uptime_get_32();
-        k_sleep(K_MSEC(100)); // Debounce
+        k_sleep(K_MSEC(100));  // Debounce
 
         button_cb(button_no, 0);
         while (gpio_pin_get(buttons[button_no].port, buttons[button_no].pin)) {
-          k_sleep(K_MSEC(10));
+            k_sleep(K_MSEC(10));
         }
 
         button_cb(button_no, k_uptime_get_32() - start);
@@ -72,56 +78,4 @@ static void button_thread(void)
             gpio_add_callback(buttons[i].port, &button_cb_data);
         }
     }
-}
-
-// LEDs and main
-
-#define LED_ON  gpio_pin_set(leds[curr_led].port, leds[curr_led].pin, 0)
-#define LED_OFF gpio_pin_set(leds[curr_led].port, leds[curr_led].pin, 1)
-static struct gpio_dt_spec leds[] = {
-    GPIO_DT_SPEC_GET_OR(DT_ALIAS(led0), gpios, {0}),
-    GPIO_DT_SPEC_GET_OR(DT_ALIAS(led1), gpios, {0}),
-    GPIO_DT_SPEC_GET_OR(DT_ALIAS(led2), gpios, {0}),
-};
-
-const int led_cnt = sizeof(leds) / sizeof(leds[0]);
-int curr_led = 0;
-
-void button_pressed(int button_no, uint32_t hold_time)
-{
-    if (!hold_time) {
-        printf("Button %d down\n", button_no);
-        if (button_no == 0) {
-          LED_OFF;
-        } else {
-            LED_OFF;
-            curr_led = (curr_led + 1) % led_cnt;
-            LED_ON;
-        }
-    } else {
-        printf("Button %d up. Hold time: %u ms\n", button_no, hold_time);
-        if (button_no == 0) {
-            LED_ON;
-        }
-    }
-}
-
-void main(void)
-{
-    if (!init_buttons(button_pressed)) {
-        printf("* Failed to initiate buttons\n");
-    }
-
-    for (int i = 0; i < led_cnt; i++) {
-        if (device_is_ready(leds[i].port) && gpio_pin_configure_dt(&leds[i], GPIO_OUTPUT) == 0) {
-            if (i == curr_led) {
-                LED_ON;
-            }
-        } else {
-            printf("* Failed to setup led %d\n", i);
-        }
-    }
-
-    printf("Press the buttons!\n");
-
 }

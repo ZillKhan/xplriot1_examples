@@ -1,3 +1,4 @@
+
 /*
  * Copyright 2022 u-blox
  *
@@ -14,20 +15,19 @@
  * limitations under the License.
  */
 
-/*
- *
- * Hello world application using ubxlib
- *
+#include <stdint.h>
+
+/**
+ * Button callback function.
+ * @param   button_no The index of the button pressed. First index is 0.
+ * @param   hold_time Button press time in milliseconds. Will be zero
+ *                    when the button is going down and contain the elapsed
+ *                    time since button down when button going up.
  */
+typedef void (*button_cb_t)(int button_no, uint32_t hold_time);
 
-#include "ubxlib.h"
-
-void main()
-{
-    uPortInit();
-    int i = 0;
-    while (1) {
-        uPortLog("Hello #%3d\n", ++i);
-        uPortTaskBlock(5000);
-    }
-}
+/** Initiate button handling
+ * @param   cb Callback to be called when a button is pressed.
+ * @return     Success or failure.
+ */
+bool init_buttons(button_cb_t cb);
